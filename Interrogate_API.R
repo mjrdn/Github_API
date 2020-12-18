@@ -34,3 +34,31 @@ gitDF = jsonlite::fromJSON(jsonlite::toJSON(json1))
 
 # Subset data.frame
 gitDF[gitDF$full_name == "jtleek/datasharing", "created_at"] 
+
+#######################################################################################################
+
+userData = fromJSON("https://api.github.com/users/mjrdn")
+
+#number of followers for user defined
+userData$followers 
+
+personalFollowers = fromJSON("https://api.github.com/users/mjrdn/followers")
+
+personalFollowers$login
+
+#names of people i'm following
+numFollowing = fromJSON("https://api.github.com/users/mjrdn/following")
+numFollowing$login 
+
+#number of my repositories that are public
+userData$public_repos 
+
+repos = fromJSON("https://api.github.com/users/mjrdn/repos")
+#Names of all public repositories
+repos$name 
+#Date each repository was made
+repos$created_at  
+#Full names of those repositories
+repos$full_name 
+
+
