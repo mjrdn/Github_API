@@ -61,4 +61,29 @@ repos$created_at
 #Full names of those repositories
 repos$full_name 
 
+#####################################################################################################
+#As we can see i'm not a very active user so I will use an example of another classmate who is slightly more active 
 
+userData = fromJSON("https://api.github.com/users/andrewtobin99")
+
+#number of followers for user defined
+userData$followers 
+
+personalFollowers = fromJSON("https://api.github.com/users/andrewtobin99/followers")
+
+personalFollowers$login
+
+#names of people i'm following
+numFollowing = fromJSON("https://api.github.com/users/andrewtobin99/following")
+numFollowing$login 
+
+#number of my repositories that are public
+userData$public_repos 
+
+repos = fromJSON("https://api.github.com/users/andrewtobin99/repos")
+#Names of all public repositories
+repos$name 
+#Date each repository was made
+repos$created_at  
+#Full names of those repositories
+repos$full_name 
