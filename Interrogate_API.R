@@ -6,12 +6,10 @@ library(jsonlite)
 install.packages("httpuv")
 library(httpuv)
 
-install.packages("plotly")
-library(plotly)
-
 install.packages("httr")
 library(httr)
 
+install.packages("devtools")
 require(devtools)
 
 oauth_endpoints("github")
@@ -179,3 +177,73 @@ for(i in 1:length(usernames))
   }
   next
 }
+
+#Using plotly to graph
+install.packages("plotly")
+library(plotly)
+
+Sys.setenv("plotly_username"="mjrdn")
+Sys.setenv("plotly_api_key"="1xSQT9Yj25CGl2rUEHYP")
+
+#plotting a graph of repositories v followers coloured by year joined
+plotReposFollowers = plot_ly(data = usersDB, x = ~repositories, y = ~followers, 
+                text = ~paste("Followers: ", followers, "<br>Repositories: ", 
+                              repositories, "<br>Date Joined:", dateJoined), color = ~dateJoined)
+plotRepFollowers
+
+#sending to plotly
+api_create(plotReposFollowers, filename = "Repositories vs Followers")
+
+#plotting a graph of following v followers coloured by year
+plotFollowersFollowings = plot_ly(data = usersDB, x = ~following, y = ~followers, text = ~paste("Followers: ", followers, "<br>Following: ", following), color = ~dateJoined)
+plotFollowersFollowings
+
+#send to plotly
+api_create(plotFollowersFollowings, filename = "Following vs Followers")
+
+#plotting a graph of the 10 most popular languages used by the 100 users.
+languages = c()
+
+for (i in 1:length(userList))
+{
+  reposURL = paste("https://api.github.com/users/", userList[i], "/repos", sep = "")
+  repos = GET(reposURL, gtoken)
+  reposContent = content(repos)
+  reposDB = jsonlite::fromJSON(jsonlite::toJSON(reposContent))
+  reposNames = reposDB$name
+  
+  #Loops through all the repositories of each user
+  for (j in 1: length(reposNames))
+  {
+    #Finds all the repositories and saves in a data frame
+    reposURL2 = paste("https://api.github.com/repos/", userList[i], "/", reposNames[j], sep = "")
+    repos2 = GET(reposURL2, gtoken)
+    reposContent2 = content(repos2)
+    reposDB2 = jsonlite::fromJSON(jsonlite::toJSON(reposContent2))
+    language = reposDB2$language
+    
+    #Removes any repositories that contain no specific language
+    if (length(language) != 0 && language != "<NA>")
+    {
+      languages[length(languages)+1] = language
+    }
+    next
+  }
+  next
+}
+
+#Puts the Ten most popular languages in a table 
+eachLanguage = sort(table(languages), increasing=TRUE)
+topTenLanguages = eachLanguage[(length(eachLanguage)-9):length(eachLanguage)]
+
+#converts to dataframe
+languageDB = as.data.frame(topTenLanguages)
+
+#Plot the data frame of languages
+plotTenLanguages = plot_ly(data = languageDB, x = languageDB$languages, y = languageDB$Freq, type = "bar")
+plotTenLanguages
+
+Sys.setenv("plotly_username"="mjrdn")
+Sys.setenv("plotly_api_key"="1xSQT9Yj25CGl2rUEHYP")
+api_create(plotTenLanguages, filename = "Ten Most Popular Languages")
+
